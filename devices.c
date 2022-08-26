@@ -14,9 +14,7 @@ int main(int argc, char const *argv[])
         // error
         perror("getifaddrs");
         exit(1);
-    //...
     }
-    //...
 
     while(address != NULL)
     {
@@ -37,7 +35,9 @@ int main(int argc, char const *argv[])
         }
 
         address = address->ifa_next;
+    //...
     }
+    //...
 
     //release memory...
     freeifaddrs(address);
