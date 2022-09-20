@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+
 #include <sys/socket.h>
 #include <netdb.h>
 #include <ifaddrs.h>
 
 int main(int argc, char const *argv[])
 {
-    
-    struct ifaddrs* address; 
-    
-    if(getifaddrs(&address) == -1)
-    {   
-        // error
-        perror("getifaddrs");
-        exit(1);
-    }
 
-    while(address != NULL)
+  struct* ifaddrs address;
+
+
+  if (getifaddrs(&address) == -1) {
+    perror("getifaddrs");
+    exit(EXIT_FAILURE);
+  }
+
+  while(address != NULL)
     {
         int family = address->ifa_addr->sa_family;
 
@@ -40,7 +43,8 @@ int main(int argc, char const *argv[])
     //...
 
     //release memory...
-    freeifaddrs(address);
+    freeifaddrs(address);  
 
-    return 0;
+  
+  return 0;
 }
