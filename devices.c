@@ -1,50 +1,44 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <assert.h>
-
 #include <sys/socket.h>
 #include <netdb.h>
 #include <ifaddrs.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char const *argv[])
 {
+   struct ifaddrs *addresses;
 
-  struct* ifaddrs address;
+    if (getifaddrs(&addresses) == -1) {
+        printf("getifaddrs call failed\n");
+        return -1;
+    }
 
+    while(addresses != NULL) {
+        if (addresses->ifa_addr == NULL) { 
+            addresses = addresses->ifa_next;
+            continue;
+        }
+        int family = addresses->ifa_addr->sa_family;
+        if (family == AF_INET || family == AF_INET6) {
 
-  if (getifaddrs(&address) == -1) {
-    perror("getifaddrs");
-    exit(EXIT_FAILURE);
-  }
-
-  while(address != NULL)
-    {
-        int family = address->ifa_addr->sa_family;
-
-        if(family == AF_INET || family == AF_INET6)
-        {
-            printf("%s: ", address->ifa_name);
-            printf("%s", family == AF_INET ? "IPv4" : "IPv6");
+            printf("%s\t", addresses->ifa_name);
+            printf("%s\t", family == AF_INET ? "IPv4" : "IPv6");
 
             char ap[100];
-
-            const int family_size = family == AF_INET ? 
-            sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6);
-            getnameinfo(address->ifa_addr,
-            family_size, ap, sizeof(ap), 0, 0, 0x00000002);
+            const int family_size = family == AF_INET ?
+                sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6);
+            getnameinfo(addresses->ifa_addr,
+                    family_size, ap, sizeof(ap), 0, 0, NI_NUMERICHOST);
             printf("\t%s\n", ap);
+
         }
-
-        address = address->ifa_next;
-    //...
+        addresses = addresses->ifa_next;
     }
-    //...
 
-    //release memory...
-    freeifaddrs(address);  
 
-  
-  return 0;
+    freeifaddrs(addresses);
+    
+
+
+    return 0;
 }
