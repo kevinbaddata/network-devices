@@ -13,6 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
+
+
 int main(int argc, char const *argv[])
 {
     struct ifaddrs *addresses;
@@ -20,7 +24,7 @@ int main(int argc, char const *argv[])
     // check if getifaddrs() failed
     if (getifaddrs(&addresses) == -1) {
         printf("getifaddrs call failed\n");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     while(addresses != NULL) {
@@ -38,8 +42,16 @@ int main(int argc, char const *argv[])
         if (family == AF_INET || family == AF_INET6) {
 
             printf("%s\t", addresses->ifa_name);
-            printf("%s\t", family == AF_INET ? "IPv4" : "IPv6");
-
+            
+            switch (family) {
+                case AF_INET:
+                    printf("IPv4\t");
+                    break;
+                case AF_INET6:
+                    printf("IPv6\t");
+                    break;
+            }
+            
             // define a buffer to store the address
             char buffer[100];
 
@@ -61,5 +73,6 @@ int main(int argc, char const *argv[])
     
 
 
-    return 0;
+    return EXIT_SUCCESS;
 }
+
